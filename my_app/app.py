@@ -22,7 +22,3 @@ def check_one_zip():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', threaded=True)
-
-path_to_prediction_file = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions.csv')
-with open(path_to_prediction_file, 'r') as f:
-    message = f.readline()[-1].split(',')[1]

@@ -181,8 +181,6 @@ def predict_most_recent():
     df = construct_most_recent_df(previous_weather, most_recent_weather)
     valid_time = str(df['valid_time_gmt'].values[0])
     df = prepare_df_for_encoding(df)
-
-
     path = os.path.join(os.environ['HOME'],'pickles/label_encoding_dict.p')
     with open(path, 'rb') as f:
         d = pickle.load(f)
@@ -224,3 +222,6 @@ def predict_most_recent():
         f.write("{}, {}, {} \n".format(prediction, message, valid_time))
     with open(path_to_prediction_file_single, 'w') as f:
         f.write("{}, {}, {} \n".format(prediction, message, valid_time))
+
+if __name__ == '__main__':
+    predict_most_recent()
