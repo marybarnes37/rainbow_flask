@@ -219,5 +219,8 @@ def predict_most_recent():
         else:
             message = "It's not looking good for rainbows in Seattle. Check back later."
     path_to_prediction_file = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions.csv')
+    path_to_prediction_file_single = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions.csv')
     with open(path_to_prediction_file, 'a') as f:
+        f.write("{}, {}, {} \n".format(prediction, message, valid_time))
+    with open(path_to_prediction_file_single, 'w') as f:
         f.write("{}, {}, {} \n".format(prediction, message, valid_time))
