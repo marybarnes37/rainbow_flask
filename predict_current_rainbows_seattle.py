@@ -170,7 +170,6 @@ def fill_missing_values(df):
 def prepare_df_for_encoding(df):
     df = drop_none_columns(df)
     df = drop_times_icons_names(df)
-    print('df before casting: \n {}'.format(df))
     df = cast_columns_to_correct_types(df)
     df = fill_missing_values(df)
     df = cast_columns_to_correct_types(df)
@@ -179,13 +178,11 @@ def prepare_df_for_encoding(df):
 
 def predict_most_recent():
     previous_weather, most_recent_weather = get_most_recent_weather()
-    print('previous_weather: \n {}'.format(previous_weather))
     df = construct_most_recent_df(previous_weather, most_recent_weather)
-    print('first pass data frame: \n {}'.format(df))
+    valid_time = df['valid_time_gmt']
     df = prepare_df_for_encoding(df)
-    print('prepared for encoding data frame: \n {}'.format(df))
-    if (float(df['solar_angle'].values) < -2) or (float(df['solar_angle'].values) > 45):
-        return 0
+
+
     path = os.path.join(os.environ['HOME'],'pickles/label_encoding_dict.p')
     with open(path, 'rb') as f:
         d = pickle.load(f)
@@ -195,13 +192,32 @@ def predict_most_recent():
     path3 = os.path.join(os.environ['HOME'],'pickles/test_final_model.pk')
     with open(path3, 'rb') as f:
         final_model = pickle.load(f)
-    categorical_features=['clds', 'pressure_desc',
-              'uv_desc', 'wdir_cardinal', 'wx_phrase',
-              'prev_clds', 'prev_pressure_desc', 'prev_uv_desc', 'prev_wdir_cardinal',
-                'prev_wx_phrase', 'icon_extd', 'prev_icon_extd']
-    encoded_obs = df[categorical_features].apply(lambda x: d[x.name].transform(x))
-    df = df.drop(categorical_features, axis=1)
-    df = pd.concat([df, encoded_obs], axis=1)
-    OHC_SS_encoded_data = OHC_SS_enc_pipeline.transform(df)
-    prediction = final_model.predict_proba(OHC_SS_encoded_data)
-    return prediction[0][1]
+
+    if (float(df['solar_angle'].values) > 45):
+        message = 'sorry Seattleites, check back when the sun is a bit lower'
+        prediction = 0
+    elif (float(df['solar_angle'].values) < -2):
+        message = 'sorry Seattleites, check back when the sun is a bit higher'
+        prediction = 0
+    else:
+        categorical_features=['clds', 'pressure_desc',
+                  'uv_desc', 'wdir_cardinal', 'wx_phrase',
+                  'prev_clds', 'prev_pressure_desc', 'prev_uv_desc', 'prev_wdir_cardinal',
+                    'prev_wx_phrase', 'icon_extd', 'prev_icon_extd']
+        encoded_obs = df[categorical_features].apply(lambda x: d[x.name].transform(x))
+        df = df.drop(categorical_features, axis=1)
+        df = pd.concat([df, encoded_obs], axis=1)
+        OHC_SS_encoded_data = OHC_SS_enc_pipeline.transform(df)
+        full_prediction = final_model.predict_proba(OHC_SS_encoded_data)
+        prediction = full_prediction[0][1]
+        if prediction >= .6:
+            message = "Get outside Seattle! There's a HIGH probability of rainbow sitings."
+        elif prediction >= .35:
+            message = "If I were in Seattle, I'd be outside looking for rainbows. 50/50 chances."
+        elif prediction >= .2:
+            message = "Chances you'll spot a rainbow are modest, but why not take a stroll anyway Seattle?"
+        else:
+            message = "It's not looking good for rainbows + Seattle. Check back later."
+    path_to_prediction_file = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions.csv')
+    with open(path_to_prediction_file, 'a') as f:
+        f.write("{}, {}, {}".format(prediction, message, valid_time))
