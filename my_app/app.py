@@ -8,7 +8,10 @@ zip_model = checkZip()
 @app.route('/')
 def index():
     supported_counties = zip_model.get_supported_counties()
-    return render_template('index.html', counties = supported_counties)
+    path_to_prediction_file = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions.csv')
+    with open(path_to_prediction_file, 'r') as f:
+        message = f.readline[-1].split(',')[1]
+    return render_template('index.html', message = message, counties = supported_counties)
 
 @app.route('/response_to_sign_up', methods=['POST'])
 def check_one_zip():
