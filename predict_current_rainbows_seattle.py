@@ -179,7 +179,7 @@ def prepare_df_for_encoding(df):
 def predict_most_recent():
     previous_weather, most_recent_weather = get_most_recent_weather()
     df = construct_most_recent_df(previous_weather, most_recent_weather)
-    valid_time = string(df['valid_time_gmt'].values[0])
+    valid_time = str(df['valid_time_gmt'].values[0])
     df = prepare_df_for_encoding(df)
 
 
