@@ -167,6 +167,7 @@ def fill_missing_values(df):
 def prepare_df_for_encoding(df):
     df = drop_none_columns(df)
     df = drop_times_icons_names(df)
+    print('df before casting: \n {}'.format(df))
     df = cast_columns_to_correct_types(df)
     df = fill_missing_values(df)
     return df
@@ -174,8 +175,11 @@ def prepare_df_for_encoding(df):
 
 def predict_most_recent():
     previous_weather, most_recent_weather = get_most_recent_weather()
+    print('previous_weather: \n {}'.format(previous_weather))
     df = construct_most_recent_df(previous_weather, most_recent_weather)
+    print('first pass data frame: \n {}'.format(df))
     df = prepare_df_for_encoding(df)
+    print('prepared for encoding data frame: \n {}'.format(df))
     if (float(df['solar_angle'].values) < -2) or (float(df['solar_angle'].values) > 45):
         return 0
     path = os.path.join(os.environ['HOME'],'pickles/label_encoding_dict.p')
