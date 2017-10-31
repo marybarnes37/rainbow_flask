@@ -138,7 +138,10 @@ def cast_columns_to_correct_types(df):
                    'prev_dewPt', 'prev_feels_like', 'prev_heat_index', 'prev_wc', 'pressure',
                       'temp', 'uv_index', 'vis', 'prev_pressure', 'prev_temp', 'prev_uv_index', 'prev_vis']
     for column in numeric_columns:
-        df[column] = df[column].apply(pd.to_numeric)
+        try:
+            df[column] = df[column].apply(pd.to_numeric)
+        except:
+            continue
     return df
 
 
@@ -170,6 +173,7 @@ def prepare_df_for_encoding(df):
     print('df before casting: \n {}'.format(df))
     df = cast_columns_to_correct_types(df)
     df = fill_missing_values(df)
+    df = cast_columns_to_correct_types(df)
     return df
 
 
