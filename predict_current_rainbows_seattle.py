@@ -179,7 +179,7 @@ def prepare_df_for_encoding(df):
 def predict_most_recent():
     previous_weather, most_recent_weather = get_most_recent_weather()
     df = construct_most_recent_df(previous_weather, most_recent_weather)
-    valid_time = df['valid_time_gmt'].values
+    valid_time = string(df['valid_time_gmt'].values[0])
     df = prepare_df_for_encoding(df)
 
 
@@ -217,7 +217,7 @@ def predict_most_recent():
         elif prediction >= .2:
             message = "Chances you'll spot a rainbow are modest, but why not take a stroll anyway Seattle?"
         else:
-            message = "It's not looking good for rainbows + Seattle. Check back later."
+            message = "It's not looking good for rainbows in Seattle. Check back later."
     path_to_prediction_file = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions.csv')
     with open(path_to_prediction_file, 'a') as f:
-        f.write("{}, {}, {}".format(prediction, message, valid_time))
+        f.write("{}, {}, {} \n".format(prediction, message, valid_time))
