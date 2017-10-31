@@ -187,4 +187,4 @@ def predict_most_recent():
     df = pd.concat([df, encoded_obs], axis=1)
     OHC_SS_encoded_data = OHC_SS_enc_pipeline.transform(df)
     prediction = final_model.predict_proba(OHC_SS_encoded_data)
-    return prediction
+    return prediction[0][1]
