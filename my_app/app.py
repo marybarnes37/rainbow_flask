@@ -1,6 +1,7 @@
 from __future__ import division
 from flask import Flask, render_template, request, jsonify
 from check_zip import checkZip
+import os
 
 app = Flask(__name__)
 zip_model = checkZip()
@@ -22,3 +23,8 @@ def check_one_zip():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', threaded=True)
+
+
+path_to_prediction_file_single = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions_single.csv')
+with open(path_to_prediction_file_single, 'r') as f:
+    message = f.readline().split(',')[1].strip()
