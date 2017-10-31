@@ -1,3 +1,12 @@
+import pandas as pd
+import os
+import sys
+import requests
+from pysolar.solar import get_altitude
+import pickle
+import time
+import datetime
+
 def lookup_timezone(station):
     path = os.path.join(os.environ['HOME'],'pickles/metar_timezone_dict.p')
     with open(path, 'rb') as f:
