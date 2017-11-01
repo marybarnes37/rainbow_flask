@@ -163,8 +163,8 @@ body {
 
 #footer {
     background-color: black;
-    padding-top: 80px;
-    padding-bottom: 80px}
+    padding-top: 80px !important;
+    padding-bottom: 80px !important}
 
 #footer p{
   color: #D3D3D3;
