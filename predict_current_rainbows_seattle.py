@@ -219,7 +219,7 @@ def predict_most_recent():
             elif prediction >= .2:
                 message = "Chances you'll spot a rainbow are modest, but why not take a stroll anyway?"
             else:
-                message = "Bad news: you're probably not going to spot a rainbow in the next hour. Good news: you can sign up to receive text alerts when you chances are high!"
+                message = "The bad news is that you're probably not going to spot a rainbow in the next hour. The good news is that you can sign up to receive text alerts when your chances are high!"
         path_to_prediction_file = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions.csv')
         path_to_prediction_file_single = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions_single.csv')
         with open(path_to_prediction_file, 'a') as f:

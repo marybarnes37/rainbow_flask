@@ -41,7 +41,7 @@ p {
   margin-bottom: 20px; }
 
 .bg-primary {
-  background-color: #F05F40 !important; }
+  background-color: #000000!important; }
 
 .bg-dark {
   color: white;
@@ -145,7 +145,7 @@ body {
         font-size: 18px;
         font-weight: 700;
         margin-top: 0;
-        margin-bottom: 0;
+        margin-bottom: 10px;
         text-transform: uppercase;
         color: black}
 
@@ -177,7 +177,7 @@ header.masthead {
     header.masthead .header-content .header-content-inner p {
       font-size: 16px;
       font-weight: 300;
-      margin-top: 10px;
+      margin-top: 20px;
       margin-bottom: 20px;
       color: rgba(255, 255, 255, 0.7); }
   @media (min-width: 768px) {
