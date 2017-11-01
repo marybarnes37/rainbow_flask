@@ -191,7 +191,7 @@ def predict_most_recent():
         path2 = os.path.join(os.environ['HOME'],'pickles/OHC_SS_pipeline.p')
         with open(path2, 'rb') as f:
             OHC_SS_enc_pipeline = pickle.load(f)
-        path3 = os.path.join(os.environ['HOME'],'pickles/test_final_model.pk')
+        path3 = os.path.join(os.environ['HOME'],'pickles/final_model.pk')
         with open(path3, 'rb') as f:
             final_model = pickle.load(f)
 
@@ -212,9 +212,9 @@ def predict_most_recent():
             OHC_SS_encoded_data = OHC_SS_enc_pipeline.transform(df)
             full_prediction = final_model.predict_proba(OHC_SS_encoded_data)
             prediction = full_prediction[0][1]
-            if prediction >= .6:
+            if prediction >= .5:
                 message = "Go on a walk or get to a window. Enjoy!"
-            elif prediction >= .35:
+            elif prediction >= .3:
                 message = "If I were in Seattle, I'd be outside hunting for rainbows."
             elif prediction >= .2:
                 message = "Chances you'll spot a rainbow are modest, but why not take a stroll anyway?"
