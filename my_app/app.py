@@ -13,8 +13,19 @@ def index():
     with open(path_to_prediction_file_single, 'r') as f:
         message_list = f.readline().split(',')
         message = message_list[1].strip()
-        probability = message_list[0].strip()[:4]
-    return render_template('index.html', message = message, probability = probability, counties = supported_counties)
+        probability = message_list[0].strip()
+    if int(probability) >= .6:
+        prob_words = 'very high'
+    elif int(probability) >= .35:
+        prob_words = 'fairly good'
+    elif int(probability) >= .2:
+        prob_words = 'quite modest'
+    else int(probability) > 0:
+        prob_words = 'slim to none'
+    else:
+        prob_words = 'nil'
+    return render_template('index.html', message = message, probability = probability,
+                    prob_words = prob_words, counties = supported_counties)
 
 @app.route('/response_to_sign_up', methods=['POST'])
 def check_one_zip():
