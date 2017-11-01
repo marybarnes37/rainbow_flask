@@ -20,7 +20,7 @@ def index():
         prob_words = 'fairly good'
     elif int(probability) >= .2:
         prob_words = 'quite modest'
-    else int(probability) > 0:
+    elif int(probability) > 0:
         prob_words = 'slim to none'
     else:
         prob_words = 'nil'
