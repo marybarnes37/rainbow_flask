@@ -65,6 +65,7 @@ def get_most_recent_weather():
         print('encountered status code {} for url {}'.format(r.status_code, url))
         with open('incoming_weather_errors_and_status_log.txt', "a") as myfile:
             myfile.write('encountered status code {} for url {}'.format(r.status_code, url))
+        return None, None
     return previous_weather, most_recent_weather
 
 
@@ -193,10 +194,10 @@ def predict_most_recent():
             final_model = pickle.load(f)
 
         if (float(df['solar_angle'].values) > 45):
-            message = 'sorry Seattleites, check back when the sun is a bit lower'
+            message = 'Sorry Seattleites, check back when the sun is a bit lower in the sky.'
             prediction = 0
         elif (float(df['solar_angle'].values) < -2):
-            message = 'sorry Seattleites, check back when the sun is a bit higher'
+            message = 'Sorry Seattleites, check back when the sun is a bit higher in the sky.'
             prediction = 0
         else:
             categorical_features=['clds', 'pressure_desc',
