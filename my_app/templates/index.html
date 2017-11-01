@@ -81,8 +81,9 @@
         <div class="header-content-inner">
           <h1 id="homeHeading">infinity rainbows</h1>
           <hr>
+          <p class="text-muted">The probability of seeing a rainbow is {{probability}}.</p>
           <p>{{message}}</p>
-          <a class="btn btn-primary btn-xl js-scroll-trigger" href="#tips">tips on spotting rainbows</a>
+          <a class="btn btn-primary btn-xl js-scroll-trigger" href="#signup">sign up for text alerts</a>
         </div>
       </div>
     </header>
@@ -91,7 +92,7 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto text-center">
-            <h2 class="section-heading text-white">infinity rainbows</h2>
+            <h2 class="section-heading text-white">infinity rainbow alerts</h2>
             <hr class="light">
             <p class="text-faded">Never miss the joy of a rainbow - COMING SOON</p>
             <!-- <a class="btn btn-default btn-xl js-scroll-trigger" href="#tips">Find your pot of gold</a> -->
@@ -115,27 +116,27 @@
             <div class="service-box">
               <i class="fa fa-4x fa-sun-o text-primary sr-icons"></i>
               <h3>sun</h3>
-              <p class="text-muted"> a note </p>
+              <p class="text-muted"> Rainbows only appear when the sun is at 42 degrees or less. </p>
             </div>
           </div>
           <div class="col-lg-4 col-md-6 text-center">
             <div class="service-box">
               <i class="fa fa-4x fa-tint text-primary sr-icons"></i>
               <h3>moisture</h3>
-              <p class="text-muted"> a note </p>
+              <p class="text-muted"> Rainbows thrive in light showers and mists.  </p>
             </div>
           </div>
           <div class="col-lg-4 col-md-6 text-center">
             <div class="service-box">
               <i class="fa fa-4x fa-thermometer-half text-primary sr-icons"></i>
               <h3>temperature</h3>
-              <p class="text-muted"> a note </p>
+              <p class="text-muted"> Rainbows need water, not ice. You won't see any when it's too cold. </p>
             </div>
           </div>
         </div>
 		<br>
 		<div class="col-lg-8 mx-auto text-center">
-		  <a class="btn btn-primary btn-xl js-scroll-trigger" onclick="submit();">Sign up for alerts</a>
+
 		</div>
 	    <div class="col-lg-8 mx-auto text-center">
 		  	<h3><span class="hidden"></span></h3>
@@ -147,14 +148,17 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto text-center">
-            <h2 class="section-heading">Supported counties:</h2>
+            <h2 class="section-heading">about infinity rainbows</h2>
             <hr class="light">
-			{% for state in counties.keys() %}
-			<p>{{ state }}'s supported counties are {{ counties[state] }} </p>
-			{% endfor %}
-      <!-- {% for state in counties %}
+            <p class="text-muted">Infinity Rainbows uses a random forest model to predicts when rainbows will appear. The training dataset was assembled based on timestamps from photos of rainbows posted to social media platforms. The website, built with Flask, displays an updated probability each hour based on the most recent weather report. A (future) Twilio integration allows Seattleites to sign up to receive text notifications when there is a high probability of rainbows.</p>
+            <p class="text-muted">Infinity Rainbows was created by Mary Barnes as a capstone project for the Galvanize Data Science Immersive. </p>
+            <h5> current probability output: </h5>
+            <p class="text-muted">{{probability}}</p>
+            <p class="text-muted">Text message alerts are activated when the probability of there being a rainbow is above 60%.</p>
+      <!-- {% for state in counties.keys() %}
 			<p>{{ state }}'s supported counties are {{ counties[state] }} </p>
 			{% endfor %} -->
+
           </div>
         </div>
       </div>

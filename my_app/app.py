@@ -11,8 +11,10 @@ def index():
     supported_counties = zip_model.get_supported_counties()
     path_to_prediction_file_single = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions_single.csv')
     with open(path_to_prediction_file_single, 'r') as f:
-        message = f.readline().split(',')[1].strip()
-    return render_template('index.html', message = message, counties = supported_counties)
+        message_list = f.readline().split(',')
+        message = message_list[1].strip()
+        probability = message_list[0].strip()[:4]
+    return render_template('index.html', message = message, probability = probability, counties = supported_counties)
 
 @app.route('/response_to_sign_up', methods=['POST'])
 def check_one_zip():
