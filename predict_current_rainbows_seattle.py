@@ -61,12 +61,14 @@ def get_most_recent_weather():
             pass
         most_recent_weather = r.json()['observations'][-1]
         previous_weather = r.json()['observations'][-2]
+
     else:
         print('encountered status code {} for url {}'.format(r.status_code, url))
         with open('incoming_weather_errors_and_status_log.txt', "a") as myfile:
             myfile.write('encountered status code {} for url {}'.format(r.status_code, url))
-        return None, None
+        previous_weather, most_recent_weather = None, None
     return previous_weather, most_recent_weather
+
 
 
 
