@@ -23,7 +23,7 @@ def index():
     elif float(probability) > 0:
         prob_words = 'slim to none'
     else:
-        prob_words = 'nil'
+        prob_words = 'nonexistant'
     return render_template('index.html', message = message, probability = probability,
                     prob_words = prob_words)
 
