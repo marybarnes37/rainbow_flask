@@ -141,13 +141,23 @@ body {
           #mainNav.navbar-shrink .navbar-nav > li.nav-item > a.nav-link:focus:hover {
             color: #F05F40; } }
 
-    #probability_words {
-        font-size: 18px;
-        font-weight: 700;
-        margin-top: 0;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        color: black}
+#probability_words {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    color: black}
+
+#about {
+    background-color: gray}
+
+
+#footer {
+    background-color: black;
+    color: gray;
+    font-size: 10px}
+
 
 header.masthead {
   position: relative;
