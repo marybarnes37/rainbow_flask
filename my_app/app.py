@@ -25,7 +25,7 @@ def index():
     else:
         prob_words = 'nil'
     return render_template('index.html', message = message, probability = probability,
-                    prob_words = prob_words, counties = supported_counties)
+                    prob_words = prob_words)
 
 # @app.route('/response_to_sign_up', methods=['POST'])
 # def check_one_zip():
