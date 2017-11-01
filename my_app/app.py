@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    supported_counties = zip_model.get_supported_counties()
+    # supported_counties = zip_model.get_supported_counties()
     path_to_prediction_file_single = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions_single.csv')
     with open(path_to_prediction_file_single, 'r') as f:
         message_list = f.readline().split(',')
@@ -36,8 +36,3 @@ def index():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', threaded=True)
-
-
-path_to_prediction_file_single = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions_single.csv')
-with open(path_to_prediction_file_single, 'r') as f:
-    message = f.readline().split(',')[1].strip()
