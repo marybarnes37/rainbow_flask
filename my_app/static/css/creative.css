@@ -149,12 +149,18 @@ body {
     text-transform: uppercase;
     color: black}
 
-#about {
+#about{
     background-color: #D3D3D3;
-    color: white}
+    color: white;
+    padding-top: 30px  }
+
+#about h2, #about h5{
+  color: black
+}
 
 
-#footer {
+
+#footer, #footer p {
     background-color: black;
     color: #D3D3D3;
     font-size: 10px}
