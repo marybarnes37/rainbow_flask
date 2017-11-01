@@ -164,6 +164,13 @@ header.masthead {
       margin-top: 0;
       margin-bottom: 0;
       text-transform: uppercase; }
+    header.masthead .header-content .header-content-inner h2 {
+        font-size: 20px;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 0;
+        text-transform: uppercase;
+        color: black}
     header.masthead .header-content .header-content-inner hr {
       margin: 30px auto; }
     header.masthead .header-content .header-content-inner p {
@@ -299,7 +306,7 @@ header.masthead {
 .btn-primary {
   color: white;
   border-color: #F05F40;
-  background-color: #F05F40; }
+  background-color: #000000; }
   .btn-primary.focus, .btn-primary:focus {
     color: white;
     border-color: #a4270d;
