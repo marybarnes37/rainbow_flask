@@ -213,13 +213,13 @@ def predict_most_recent():
             full_prediction = final_model.predict_proba(OHC_SS_encoded_data)
             prediction = full_prediction[0][1]
             if prediction >= .5:
-                message = "Go on a walk or get to a window. Enjoy!"
+                message = "Go on a walk or get to a window!! Then sign up to receive text alerts next time the probability of seeing a rainbow is this high."
             elif prediction >= .3:
-                message = "If I were in Seattle, I'd be outside hunting for rainbows."
+                message = "I'd be outside hunting for rainbows if I were in Seattle. I'd also sign up to receive text alerts when your chances of spotting a rainbow are even higher."
             elif prediction >= .2:
-                message = "Chances you'll spot a rainbow are modest, but why not take a stroll anyway?"
+                message = "The bad news is that you're unlikely to spot a rainbow in the next hour. The good news is that you can sign up to receive text alerts when your chances are high!"
             else:
-                message = "The bad news is that you're probably not going to spot a rainbow in the next hour. The good news is that you can sign up to receive text alerts when your chances are high!"
+                message = "The bad news is that you're almost certainly not going to spot a rainbow in the next hour. The good news is that you can sign up to receive text alerts when your chances are high!"
         path_to_prediction_file = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions.csv')
         path_to_prediction_file_single = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions_single.csv')
         with open(path_to_prediction_file, 'a') as f:
