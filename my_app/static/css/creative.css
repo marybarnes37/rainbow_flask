@@ -141,6 +141,14 @@ body {
           #mainNav.navbar-shrink .navbar-nav > li.nav-item > a.nav-link:focus:hover {
             color: #F05F40; } }
 
+    #probability_words {
+        font-size: 18px;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 0;
+        text-transform: uppercase;
+        color: black}
+
 header.masthead {
   position: relative;
   width: 100%;
@@ -164,13 +172,6 @@ header.masthead {
       margin-top: 0;
       margin-bottom: 0;
       text-transform: uppercase; }
-    #probability_words {
-        font-size: 18px;
-        font-weight: 700;
-        margin-top: 0;
-        margin-bottom: 0;
-        text-transform: uppercase;
-        color: black}
     header.masthead .header-content .header-content-inner hr {
       margin: 30px auto; }
     header.masthead .header-content .header-content-inner p {
