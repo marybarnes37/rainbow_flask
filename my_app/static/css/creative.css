@@ -164,8 +164,8 @@ header.masthead {
       margin-top: 0;
       margin-bottom: 0;
       text-transform: uppercase; }
-    header.masthead .header-content .header-content-inner h2 {
-        font-size: 20px;
+    #probability_words {
+        font-size: 18px;
         font-weight: 700;
         margin-top: 0;
         margin-bottom: 0;
