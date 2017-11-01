@@ -14,13 +14,13 @@ def index():
         message_list = f.readline().split(',')
         message = message_list[1].strip()
         probability = message_list[0].strip()
-    if int(probability) >= .6:
+    if float(probability) >= .6:
         prob_words = 'very high'
-    elif int(probability) >= .35:
+    elif float(probability) >= .35:
         prob_words = 'fairly good'
-    elif int(probability) >= .2:
+    elif float(probability) >= .2:
         prob_words = 'quite modest'
-    elif int(probability) > 0:
+    elif float(probability) > 0:
         prob_words = 'slim to none'
     else:
         prob_words = 'nil'
