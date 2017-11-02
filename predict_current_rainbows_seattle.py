@@ -7,6 +7,7 @@ import pickle
 import time
 import datetime
 
+
 def lookup_timezone(station):
     path = os.path.join(os.environ['HOME'],'pickles/metar_timezone_dict.p')
     with open(path, 'rb') as f:
@@ -26,7 +27,9 @@ def get_api_key(machine='ec2'):
 
 def construct_most_recent_weather_url(lat = '47.33', lon = '-122.19'):
     my_apikey = get_api_key()
-    startDate = ''.join(str(datetime.date.today()).split('-'))
+    tz = lookup_timezone('KSEA')
+    time_now = datetime.datetime.now(tz)
+    startDate = ''.join(str(time_now).split('-'))[:9]
     url = "http://api.weather.com/v1/geocode/" + lat + "/" + lon+ \
     "/observations/historical.json?apiKey=" + str(my_apikey) + \
     "&language=en-US" + "&startDate="+startDate
