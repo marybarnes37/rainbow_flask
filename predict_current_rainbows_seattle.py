@@ -199,10 +199,10 @@ def predict_most_recent():
             final_model = pickle.load(f)
 
         if (float(df['solar_angle'].values) > 45):
-            message = 'Sorry Seattleites, check back when the sun is a bit lower in the sky.'
+            message = 'Sorry Seattleites -- check back when the sun is a bit lower in the sky. Sign up for text alerts while you wait.'
             prediction = 0
         elif (float(df['solar_angle'].values) < -2):
-            message = 'Sorry Seattleites, check back when the sun is a bit higher in the sky.'
+            message = 'Sorry Seattleites -- check back when the sun is a bit higher in the sky. Sign up for text alerts while you wait.'
             prediction = 0
         else:
             categorical_features=['clds', 'pressure_desc',
