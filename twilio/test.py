@@ -1,4 +1,5 @@
 from twilio.rest import Client
+import os
 
 def get_sid(machine='ec2'):
     path = os.path.join(os.environ['HOME'],'twilio_sid.txt')
