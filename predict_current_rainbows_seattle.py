@@ -194,7 +194,7 @@ def predict_most_recent():
         path2 = os.path.join(os.environ['HOME'],'pickles/OHC_SS_pipeline.p')
         with open(path2, 'rb') as f:
             OHC_SS_enc_pipeline = pickle.load(f)
-        path3 = os.path.join(os.environ['HOME'],'pickles/final_model.pk')
+        path3 = os.path.join(os.environ['HOME'],'pickles/test_final_model.pk')
         with open(path3, 'rb') as f:
             final_model = pickle.load(f)
 
