@@ -22,6 +22,8 @@ def predict_most_recent():
         df = prepare_df_for_encoding(df)
         d, OHC_SS_enc_pipeline, final_model = load_saved_pipelines_and_model()
         message, prediction = get_message_and_prediction(df, d, OHC_SS_enc_pipeline, final_model)
+        print(message)
+        print(prediction)
         write_prediction_to_file(message, prediction, valid_time)
         
 
@@ -121,11 +123,11 @@ def get_message_and_prediction(df, d, OHC_SS_enc_pipeline, final_model):
 
 def write_prediction_to_file(message, prediction, valid_time):
     path_to_prediction_file = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions.csv')
-        path_to_prediction_file_single = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions_single.csv')
-        with open(path_to_prediction_file, 'a') as f:
-            f.write("{}, {}, {} \n".format(prediction, message, valid_time))
-        with open(path_to_prediction_file_single, 'w') as f:
-            f.write("{}, {}, {} \n".format(prediction, message, valid_time))
+    path_to_prediction_file_single = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions_single.csv')
+    with open(path_to_prediction_file, 'a') as f:
+        f.write("{}, {}, {} \n".format(prediction, message, valid_time))
+    with open(path_to_prediction_file_single, 'w') as f:
+        f.write("{}, {}, {} \n".format(prediction, message, valid_time))
 
 
 def construct_most_recent_weather_url(lat = '47.33', lon = '-122.19'):
