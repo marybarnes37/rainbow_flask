@@ -7,34 +7,73 @@ import pickle
 import time
 import datetime
 
+TIMEZONE = 'KSEA'
 
-def lookup_timezone(station):
-    path = os.path.join(os.environ['HOME'],'pickles/metar_timezone_dict.p')
+
+if __name__ == '__main__':
+    predict_most_recent()
+
+
+def predict_most_recent():
+    previous_weather, most_recent_weather = get_most_recent_weather()
+    if previous_weather != None:
+        df = construct_most_recent_df(previous_weather, most_recent_weather)
+        valid_time = str(df['valid_time_gmt'].values[0])
+        df = prepare_df_for_encoding(df)
+        d, OHC_SS_enc_pipeline, final_model = load_saved_pipelines_and_model()
+        message, prediction = get_message_and_prediction(df, d, OHC_SS_enc_pipeline, final_model)
+        write_prediction_to_file(message, prediction, valid_time)
+        
+
+def load_saved_pipelines_and_model():
+    path = os.path.join(os.environ['HOME'],'pickles/label_encoding_dict.p')
     with open(path, 'rb') as f:
-        metar_timezone_dict = pickle.load(f, encoding='latin1')
-    return metar_timezone_dict[station][1]
+        d = pickle.load(f)
+    path2 = os.path.join(os.environ['HOME'],'pickles/OHC_SS_pipeline.p')
+    with open(path2, 'rb') as f:
+        OHC_SS_enc_pipeline = pickle.load(f)
+    path3 = os.path.join(os.environ['HOME'],'pickles/test_final_model.pk')
+    with open(path3, 'rb') as f:
+        final_model = pickle.load(f)
+    return d, OHC_SS_enc_pipeline, final_model
 
 
-def get_api_key(machine='ec2'):
-    if machine == 'local':
-        path = '/Users/marybarnes/.ssh/weather.txt'
-    elif machine == 'ec2':
-        path = os.path.join(os.environ['HOME'],'weather.txt')
-    with open(path,'r') as f:
-        api_key = f.readline().strip()
-    return api_key
+def get_message_and_prediction(df, d, OHC_SS_enc_pipeline, final_model):
+    if (float(df['solar_angle'].values) > 45):
+        message = 'Sorry Seattleites -- check back when the sun is a bit lower in the sky. Sign up for text alerts while you wait.'
+        prediction = 0
+    elif (float(df['solar_angle'].values) < -2):
+        message = 'Sorry Seattleites -- check back when the sun is a bit higher in the sky. Sign up for text alerts while you wait.'
+        prediction = 0
+    else:
+        categorical_features=['clds', 'pressure_desc',
+                    'uv_desc', 'wdir_cardinal', 'wx_phrase',
+                    'prev_clds', 'prev_pressure_desc', 'prev_uv_desc', 'prev_wdir_cardinal',
+                    'prev_wx_phrase', 'icon_extd', 'prev_icon_extd']
+        encoded_obs = df[categorical_features].apply(lambda x: d[x.name].transform(x))
+        df = df.drop(categorical_features, axis=1)
+        df = pd.concat([df, encoded_obs], axis=1)
+        OHC_SS_encoded_data = OHC_SS_enc_pipeline.transform(df)
+        full_prediction = final_model.predict_proba(OHC_SS_encoded_data)
+        prediction = full_prediction[0][1]
+        if prediction >= .5:
+            message = "Go on a walk or get to a window!! Then sign up to receive text alerts next time the probability of seeing a rainbow is this high."
+        elif prediction >= .3:
+            message = "I'd be outside hunting for rainbows if I were in Seattle. I'd also sign up to receive text alerts when your chances of spotting a rainbow are even higher."
+        elif prediction >= .2:
+            message = "The bad news is that you're unlikely to spot a rainbow in the next hour. The good news is that you can sign up to receive text alerts when your chances are high!"
+        else:
+            message = "The bad news is that you're almost certainly not going to spot a rainbow in the next hour. The good news is that you can sign up to receive text alerts when your chances are high!"      
+    return messsage, prediction
 
 
-def construct_most_recent_weather_url(lat = '47.33', lon = '-122.19'):
-    my_apikey = get_api_key()
-    tz = lookup_timezone('KSEA')
-    time_now = datetime.datetime.now(tz)
-    startDate = ''.join(str(time_now).split('-'))[:9]
-    url = "http://api.weather.com/v1/geocode/" + lat + "/" + lon+ \
-    "/observations/historical.json?apiKey=" + str(my_apikey) + \
-    "&language=en-US" + "&startDate="+startDate
-    url = str.strip(url)
-    return url
+def write_prediction_to_file(message, prediction, valid_time):
+    path_to_prediction_file = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions.csv')
+        path_to_prediction_file_single = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions_single.csv')
+        with open(path_to_prediction_file, 'a') as f:
+            f.write("{}, {}, {} \n".format(prediction, message, valid_time))
+        with open(path_to_prediction_file_single, 'w') as f:
+            f.write("{}, {}, {} \n".format(prediction, message, valid_time))
 
 
 def get_most_recent_weather():
@@ -53,7 +92,7 @@ def get_most_recent_weather():
         with open('weather_errors_and_status_log.txt', "a") as myfile:
             myfile.write(str(e2))
         time.sleep(5)
-        return None, None
+        previous_weather, most_recent_weather = None, None
     if r.status_code == 200:
         try:
             if(r.json()['errors']):
@@ -64,7 +103,6 @@ def get_most_recent_weather():
             pass
         most_recent_weather = r.json()['observations'][-1]
         previous_weather = r.json()['observations'][-2]
-
     else:
         print('encountered status code {} for url {}'.format(r.status_code, url))
         with open('incoming_weather_errors_and_status_log.txt', "a") as myfile:
@@ -73,6 +111,16 @@ def get_most_recent_weather():
     return previous_weather, most_recent_weather
 
 
+def construct_most_recent_weather_url(lat = '47.33', lon = '-122.19'):
+    my_apikey = get_api_key()
+    tz = lookup_timezone(TIMEZONE)
+    time_now = datetime.datetime.now(tz)
+    startDate = ''.join(str(time_now).split('-'))[:9]
+    url = "http://api.weather.com/v1/geocode/" + lat + "/" + lon+ \
+    "/observations/historical.json?apiKey=" + str(my_apikey) + \
+    "&language=en-US" + "&startDate="+startDate
+    url = str.strip(url)
+    return url
 
 
 def get_columns(most_recent_weather):
@@ -119,6 +167,15 @@ def construct_most_recent_df(previous_weather, most_recent_weather):
     df = pd.DataFrame(columns=col)
     data, columns = get_line(previous_weather, most_recent_weather)
     df = df.append(pd.DataFrame(data, columns=columns), ignore_index=True)
+    return df
+
+
+def prepare_df_for_encoding(df):
+    df = drop_none_columns(df)
+    df = drop_times_icons_names(df)
+    df = cast_columns_to_correct_types(df)
+    df = fill_missing_values(df)
+    df = cast_columns_to_correct_types(df)
     return df
 
 
@@ -173,62 +230,18 @@ def fill_missing_values(df):
     return df
 
 
-def prepare_df_for_encoding(df):
-    df = drop_none_columns(df)
-    df = drop_times_icons_names(df)
-    df = cast_columns_to_correct_types(df)
-    df = fill_missing_values(df)
-    df = cast_columns_to_correct_types(df)
-    return df
+def lookup_timezone(station):
+    path = os.path.join(os.environ['HOME'],'pickles/metar_timezone_dict.p')
+    with open(path, 'rb') as f:
+        metar_timezone_dict = pickle.load(f, encoding='latin1')
+    return metar_timezone_dict[station][1]
 
 
-def predict_most_recent():
-    previous_weather, most_recent_weather = get_most_recent_weather()
-    if previous_weather != None:
-        df = construct_most_recent_df(previous_weather, most_recent_weather)
-        valid_time = str(df['valid_time_gmt'].values[0])
-        df = prepare_df_for_encoding(df)
-        path = os.path.join(os.environ['HOME'],'pickles/label_encoding_dict.p')
-        with open(path, 'rb') as f:
-            d = pickle.load(f)
-        path2 = os.path.join(os.environ['HOME'],'pickles/OHC_SS_pipeline.p')
-        with open(path2, 'rb') as f:
-            OHC_SS_enc_pipeline = pickle.load(f)
-        path3 = os.path.join(os.environ['HOME'],'pickles/test_final_model.pk')
-        with open(path3, 'rb') as f:
-            final_model = pickle.load(f)
-
-        if (float(df['solar_angle'].values) > 45):
-            message = 'Sorry Seattleites -- check back when the sun is a bit lower in the sky. Sign up for text alerts while you wait.'
-            prediction = 0
-        elif (float(df['solar_angle'].values) < -2):
-            message = 'Sorry Seattleites -- check back when the sun is a bit higher in the sky. Sign up for text alerts while you wait.'
-            prediction = 0
-        else:
-            categorical_features=['clds', 'pressure_desc',
-                      'uv_desc', 'wdir_cardinal', 'wx_phrase',
-                      'prev_clds', 'prev_pressure_desc', 'prev_uv_desc', 'prev_wdir_cardinal',
-                        'prev_wx_phrase', 'icon_extd', 'prev_icon_extd']
-            encoded_obs = df[categorical_features].apply(lambda x: d[x.name].transform(x))
-            df = df.drop(categorical_features, axis=1)
-            df = pd.concat([df, encoded_obs], axis=1)
-            OHC_SS_encoded_data = OHC_SS_enc_pipeline.transform(df)
-            full_prediction = final_model.predict_proba(OHC_SS_encoded_data)
-            prediction = full_prediction[0][1]
-            if prediction >= .5:
-                message = "Go on a walk or get to a window!! Then sign up to receive text alerts next time the probability of seeing a rainbow is this high."
-            elif prediction >= .3:
-                message = "I'd be outside hunting for rainbows if I were in Seattle. I'd also sign up to receive text alerts when your chances of spotting a rainbow are even higher."
-            elif prediction >= .2:
-                message = "The bad news is that you're unlikely to spot a rainbow in the next hour. The good news is that you can sign up to receive text alerts when your chances are high!"
-            else:
-                message = "The bad news is that you're almost certainly not going to spot a rainbow in the next hour. The good news is that you can sign up to receive text alerts when your chances are high!"
-        path_to_prediction_file = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions.csv')
-        path_to_prediction_file_single = os.path.join(os.environ['HOME'],'incoming_rainbow_predictions_single.csv')
-        with open(path_to_prediction_file, 'a') as f:
-            f.write("{}, {}, {} \n".format(prediction, message, valid_time))
-        with open(path_to_prediction_file_single, 'w') as f:
-            f.write("{}, {}, {} \n".format(prediction, message, valid_time))
-
-if __name__ == '__main__':
-    predict_most_recent()
+def get_api_key(machine='ec2'):
+    if machine == 'local':
+        path = '/Users/marybarnes/.ssh/weather.txt'
+    elif machine == 'ec2':
+        path = os.path.join(os.environ['HOME'],'weather.txt')
+    with open(path,'r') as f:
+        api_key = f.readline().strip()
+    return api_key
