@@ -118,7 +118,7 @@ def get_message_and_prediction(df, d, OHC_SS_enc_pipeline, final_model):
             message = "The bad news is that you're unlikely to spot a rainbow in the next hour. The good news is that you can sign up to receive text alerts when your chances are high!"
         else:
             message = "The bad news is that you're almost certainly not going to spot a rainbow in the next hour. The good news is that you can sign up to receive text alerts when your chances are high!"      
-    return messsage, prediction
+    return message, prediction
 
 
 def write_prediction_to_file(message, prediction, valid_time):
