@@ -25,6 +25,58 @@ def predict_most_recent():
         write_prediction_to_file(message, prediction, valid_time)
         
 
+def get_most_recent_weather():
+    url = construct_most_recent_weather_url()
+    try:
+        try:
+            r = requests.get(url)
+        except Exception as e1:
+            print("sleeping for 5 seconds because request failed, exception: {}".format(str(e1)))
+            with open('weather_errors_and_status_log.txt', "a") as myfile:
+                myfile.write(str(e1))
+            time.sleep(5)
+            r = requests.get(url)
+    except Exception as e2:
+        print("SKIPPING because request failed, exception: {}".format(str(e2)))
+        with open('weather_errors_and_status_log.txt', "a") as myfile:
+            myfile.write(str(e2))
+        time.sleep(5)
+        previous_weather, most_recent_weather = None, None
+    if r.status_code == 200:
+        try:
+            if(r.json()['errors']):
+                print("[ERROR RETURNED FROM API REQUEST]: {}".format(r.json()['errors'][0]['error']['message']))
+                with open('weather_errors_and_status_log.txt', "a") as myfile:
+                    myfile.write("[ERROR RETURNED FROM API REQUEST]: {}".format(r.json()['errors'][0]['error']['message']))
+        except:
+            pass
+        most_recent_weather = r.json()['observations'][-1]
+        previous_weather = r.json()['observations'][-2]
+    else:
+        print('encountered status code {} for url {}'.format(r.status_code, url))
+        with open('incoming_weather_errors_and_status_log.txt', "a") as myfile:
+            myfile.write('encountered status code {} for url {}'.format(r.status_code, url))
+        previous_weather, most_recent_weather = None, None
+    return previous_weather, most_recent_weather
+
+
+def construct_most_recent_df(previous_weather, most_recent_weather):
+    col = get_columns(most_recent_weather)
+    df = pd.DataFrame(columns=col)
+    data, columns = get_line(previous_weather, most_recent_weather)
+    df = df.append(pd.DataFrame(data, columns=columns), ignore_index=True)
+    return df
+
+
+def prepare_df_for_encoding(df):
+    df = drop_none_columns(df)
+    df = drop_times_icons_names(df)
+    df = cast_columns_to_correct_types(df)
+    df = fill_missing_values(df)
+    df = cast_columns_to_correct_types(df)
+    return df
+
+
 def load_saved_pipelines_and_model():
     path = os.path.join(os.environ['HOME'],'pickles/label_encoding_dict.p')
     with open(path, 'rb') as f:
@@ -76,41 +128,6 @@ def write_prediction_to_file(message, prediction, valid_time):
             f.write("{}, {}, {} \n".format(prediction, message, valid_time))
 
 
-def get_most_recent_weather():
-    url = construct_most_recent_weather_url()
-    try:
-        try:
-            r = requests.get(url)
-        except Exception as e1:
-            print("sleeping for 5 seconds because request failed, exception: {}".format(str(e1)))
-            with open('weather_errors_and_status_log.txt', "a") as myfile:
-                myfile.write(str(e1))
-            time.sleep(5)
-            r = requests.get(url)
-    except Exception as e2:
-        print("SKIPPING because request failed, exception: {}".format(str(e2)))
-        with open('weather_errors_and_status_log.txt', "a") as myfile:
-            myfile.write(str(e2))
-        time.sleep(5)
-        previous_weather, most_recent_weather = None, None
-    if r.status_code == 200:
-        try:
-            if(r.json()['errors']):
-                print("[ERROR RETURNED FROM API REQUEST]: {}".format(r.json()['errors'][0]['error']['message']))
-                with open('weather_errors_and_status_log.txt', "a") as myfile:
-                    myfile.write("[ERROR RETURNED FROM API REQUEST]: {}".format(r.json()['errors'][0]['error']['message']))
-        except:
-            pass
-        most_recent_weather = r.json()['observations'][-1]
-        previous_weather = r.json()['observations'][-2]
-    else:
-        print('encountered status code {} for url {}'.format(r.status_code, url))
-        with open('incoming_weather_errors_and_status_log.txt', "a") as myfile:
-            myfile.write('encountered status code {} for url {}'.format(r.status_code, url))
-        previous_weather, most_recent_weather = None, None
-    return previous_weather, most_recent_weather
-
-
 def construct_most_recent_weather_url(lat = '47.33', lon = '-122.19'):
     my_apikey = get_api_key()
     tz = lookup_timezone(TIMEZONE)
@@ -160,23 +177,6 @@ def add_solar_angle_of_observations(dict_items, prev_dict_items, station="KSEA")
     solar_angle = get_altitude(latitude, longitude, dt_obj)
     prev_solar_angle = get_altitude(latitude, longitude, prev_dt_obj)
     return solar_angle, prev_solar_angle
-
-
-def construct_most_recent_df(previous_weather, most_recent_weather):
-    col = get_columns(most_recent_weather)
-    df = pd.DataFrame(columns=col)
-    data, columns = get_line(previous_weather, most_recent_weather)
-    df = df.append(pd.DataFrame(data, columns=columns), ignore_index=True)
-    return df
-
-
-def prepare_df_for_encoding(df):
-    df = drop_none_columns(df)
-    df = drop_times_icons_names(df)
-    df = cast_columns_to_correct_types(df)
-    df = fill_missing_values(df)
-    df = cast_columns_to_correct_types(df)
-    return df
 
 
 def drop_none_columns(df):
